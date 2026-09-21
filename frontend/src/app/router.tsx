@@ -12,6 +12,8 @@ import { StatsPage } from '../features/stats/StatsPage';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { MorePage } from '../features/more/MorePage';
 
+const basename = import.meta.env.BASE_URL;
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -32,4 +34,4 @@ export const router = createBrowserRouter([
       { path: 'mas', element: <MorePage /> },
     ],
   },
-]);
+], { basename });
