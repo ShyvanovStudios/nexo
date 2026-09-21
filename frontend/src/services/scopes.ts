@@ -19,7 +19,7 @@ export const scopesService = {
 
   async create(payload: Partial<Scope>): Promise<Scope> {
     const now = new Date().toISOString();
-    const id = await db.scopes.add({
+    const id = (await db.scopes.add({
       name: payload.name || '',
       color: payload.color || '#3b82f6',
       icon: payload.icon || '',
@@ -27,7 +27,7 @@ export const scopesService = {
       is_active: payload.is_active ?? true,
       created_at: now,
       updated_at: now,
-    });
+    })) as number;
     return this.get(id);
   },
 

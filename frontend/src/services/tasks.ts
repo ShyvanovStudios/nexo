@@ -113,7 +113,7 @@ export const tasksService = {
     const base = calculateBasePriority(importance, urgency);
     const effective = calculateEffectivePriority(importance, urgency, payload.due_date ?? null, payload.due_time ?? null);
 
-    const id = await db.tasks.add({
+    const id = (await db.tasks.add({
       scope_id: payload.scope_id,
       title: payload.title,
       description: payload.description || '',
@@ -135,7 +135,7 @@ export const tasksService = {
       deleted_at: null,
       created_at: ts,
       updated_at: ts,
-    });
+    })) as number;
 
     await addHistory(id, 'TASK_CREATED');
     return this.get(id);

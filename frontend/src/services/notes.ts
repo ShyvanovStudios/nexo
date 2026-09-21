@@ -40,7 +40,7 @@ export const notesService = {
 
   async create(payload: Partial<Note>): Promise<Note> {
     const ts = new Date().toISOString();
-    const id = await db.notes.add({
+    const id = (await db.notes.add({
       scope_id: (payload as any).scope_id ?? payload.scope?.id ?? 0,
       title: payload.title || '',
       content: payload.content || '',
@@ -49,7 +49,7 @@ export const notesService = {
       deleted_at: null,
       created_at: ts,
       updated_at: ts,
-    });
+    })) as number;
     return this.get(id);
   },
 

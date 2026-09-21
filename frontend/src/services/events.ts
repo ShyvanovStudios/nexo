@@ -38,7 +38,7 @@ export const eventsService = {
 
   async create(payload: Partial<Event>): Promise<Event> {
     const ts = new Date().toISOString();
-    const id = await db.events.add({
+    const id = (await db.events.add({
       scope_id: (payload as any).scope_id ?? payload.scope?.id ?? 0,
       title: payload.title || '',
       description: payload.description || '',
@@ -49,7 +49,7 @@ export const eventsService = {
       deleted_at: null,
       created_at: ts,
       updated_at: ts,
-    });
+    })) as number;
     return this.get(id);
   },
 
