@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  /* Primary */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* Scope colors */
+  --color-scope-trabajo: #3b82f6;
+  --color-scope-casa: #22c55e;
+  --color-scope-empresa: #f97316;
+
+  /* Priority semaphore */
+  --color-priority-high: #ef4444;
+  --color-priority-medium: #eab308;
+  --color-priority-low: #22c55e;
+  --color-priority-none: #9ca3af;
+}
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100;
+  }
+
+  /* Ensure minimum touch target */
+  button, a, [role="button"] {
+    min-height: 44px;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+  }
+}
