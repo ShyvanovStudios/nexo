@@ -1,6 +1,5 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell';
-import { LoginPage } from '../features/auth/LoginPage';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
 import { MyDayPage } from '../features/myday/MyDayPage';
 import { TasksPage } from '../features/tasks/TasksPage';
@@ -12,27 +11,11 @@ import { InboxPage } from '../features/inbox/InboxPage';
 import { StatsPage } from '../features/stats/StatsPage';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { MorePage } from '../features/more/MorePage';
-import { authService } from '../services/auth';
-
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  if (!authService.isAuthenticated()) {
-    return <Navigate to="/login" replace />;
-  }
-  return <>{children}</>;
-}
 
 export const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
     path: '/',
-    element: (
-      <ProtectedRoute>
-        <AppShell />
-      </ProtectedRoute>
-    ),
+    element: <AppShell />,
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'mi-dia', element: <MyDayPage /> },

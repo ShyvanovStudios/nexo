@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import api from '../../services/api';
+import { db } from '../../services/db';
 import { formatDateTime } from '../../utils/date';
 import type { TaskHistory } from '../../types';
 
@@ -23,8 +23,8 @@ export function HistoryPage() {
   const { data: history = [], isLoading } = useQuery({
     queryKey: ['history'],
     queryFn: async () => {
-      const { data } = await api.get<TaskHistory[]>('/history/');
-      return data;
+      const rows = await db.taskHistory.orderBy('created_at').reverse().limit(100).toArray();
+      return rows as TaskHistory[];
     },
   });
 

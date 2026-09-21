@@ -1,13 +1,19 @@
 import { useUIStore } from '../../stores/uiStore';
 import { useScopes } from '../../hooks/useScopes';
 import { useTags } from '../../hooks/useTags';
-import { useAuthStore } from '../../stores/authStore';
+import { db } from '../../services/db';
 
 export function SettingsPage() {
   const { theme, setTheme } = useUIStore();
-  const { user, logout } = useAuthStore();
   const { data: scopes = [] } = useScopes();
   const { data: tags = [] } = useTags();
+
+  const handleClearData = async () => {
+    if (confirm('¿Estás seguro de que deseas borrar todos los datos? Esta acción no se puede deshacer.')) {
+      await db.delete();
+      window.location.reload();
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -16,11 +22,9 @@ export function SettingsPage() {
       {/* General */}
       <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
         <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">General</h2>
-        {user && (
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            Sesión: <span className="font-medium text-gray-800 dark:text-gray-200">{user.username}</span>
-          </div>
-        )}
+        <div className="text-sm text-gray-600 dark:text-gray-400">
+          Almacenamiento: <span className="font-medium text-gray-800 dark:text-gray-200">Local (IndexedDB)</span>
+        </div>
         <div>
           <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Tema</label>
           <select
@@ -62,13 +66,17 @@ export function SettingsPage() {
         </div>
       </section>
 
-      {/* Logout */}
-      <button
-        onClick={logout}
-        className="w-full py-3 rounded-lg text-sm font-medium text-red-600 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 min-h-[48px]"
-      >
-        Cerrar sesión
-      </button>
+      {/* Data management */}
+      <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
+        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Datos</h2>
+        <p className="text-xs text-gray-500">Los datos se almacenan localmente en tu dispositivo.</p>
+        <button
+          onClick={handleClearData}
+          className="w-full py-3 rounded-lg text-sm font-medium text-red-600 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 min-h-[48px]"
+        >
+          Borrar todos los datos
+        </button>
+      </section>
     </div>
   );
 }

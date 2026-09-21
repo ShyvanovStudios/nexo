@@ -1,30 +1,74 @@
-import api from './api';
+import { db } from './db';
 import type { InboxItem } from '../types';
+import { tasksService } from './tasks';
 
 export const inboxService = {
   async list(): Promise<InboxItem[]> {
-    const { data } = await api.get<InboxItem[]>('/inbox/');
-    return data;
+    const rows = await db.inboxItems.orderBy('created_at').reverse().toArray();
+    return rows as InboxItem[];
   },
 
   async create(content: string): Promise<InboxItem> {
-    const { data } = await api.post<InboxItem>('/inbox/', { content });
-    return data;
+    const id = await db.inboxItems.add({
+      content,
+      processed: false,
+      created_at: new Date().toISOString(),
+      processed_at: null,
+    });
+    return (await db.inboxItems.get(id)) as InboxItem;
   },
 
   async delete(id: number): Promise<void> {
-    await api.delete(`/inbox/${id}/`);
+    await db.inboxItems.delete(id);
   },
 
   async toTask(id: number): Promise<void> {
-    await api.post(`/inbox/${id}/to-task/`);
+    const item = await db.inboxItems.get(id);
+    if (!item) return;
+    const scope = await db.scopes.orderBy('position').first();
+    if (!scope) return;
+    await tasksService.create({ title: item.content, scope_id: scope.id! });
+    await db.inboxItems.update(id, { processed: true, processed_at: new Date().toISOString() });
   },
 
   async toNote(id: number): Promise<void> {
-    await api.post(`/inbox/${id}/to-note/`);
+    const item = await db.inboxItems.get(id);
+    if (!item) return;
+    const scope = await db.scopes.orderBy('position').first();
+    if (!scope) return;
+    const ts = new Date().toISOString();
+    await db.notes.add({
+      scope_id: scope.id!,
+      title: item.content.slice(0, 100),
+      content: item.content,
+      is_pinned: false,
+      tag_ids: [],
+      deleted_at: null,
+      created_at: ts,
+      updated_at: ts,
+    });
+    await db.inboxItems.update(id, { processed: true, processed_at: ts });
   },
 
   async toEvent(id: number): Promise<void> {
-    await api.post(`/inbox/${id}/to-event/`);
+    const item = await db.inboxItems.get(id);
+    if (!item) return;
+    const scope = await db.scopes.orderBy('position').first();
+    if (!scope) return;
+    const ts = new Date().toISOString();
+    const endTs = new Date(Date.now() + 3600000).toISOString();
+    await db.events.add({
+      scope_id: scope.id!,
+      title: item.content.slice(0, 100),
+      description: '',
+      start_datetime: ts,
+      end_datetime: endTs,
+      all_day: false,
+      location: '',
+      deleted_at: null,
+      created_at: ts,
+      updated_at: ts,
+    });
+    await db.inboxItems.update(id, { processed: true, processed_at: ts });
   },
 };
