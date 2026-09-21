@@ -1,6 +1,5 @@
 import { db } from './db';
 import type { DashboardData, Task, Event, Scope, Tag } from '../types';
-import { isOverdue, calculateEffectivePriority } from '../utils/priority';
 
 async function hydrateTask(row: any): Promise<Task> {
   const scope = (await db.scopes.get(row.scope_id)) as Scope;

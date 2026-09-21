@@ -1,5 +1,5 @@
 import { db } from './db';
-import type { DbTask, DbChecklistItem, DbTaskHistory } from './db';
+import type { DbTask } from './db';
 import type {
   Task,
   TaskCreatePayload,

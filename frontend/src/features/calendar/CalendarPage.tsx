@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { eventsService } from '../../services/events';
 import { useTasks } from '../../hooks/useTasks';
-import { useScopes } from '../../hooks/useScopes';
 import { ScopeBadge } from '../../components/ui/ScopeBadge';
-import { PriorityBadge } from '../../components/ui/PriorityBadge';
+import type { Task, Event as NexoEvent } from '../../types';
 import {
   format,
   startOfMonth,
@@ -13,7 +12,6 @@ import {
   endOfWeek,
   eachDayOfInterval,
   isSameMonth,
-  isSameDay,
   isToday,
   addMonths,
   subMonths,
@@ -95,7 +93,7 @@ export function CalendarPage() {
   );
 }
 
-function MonthView({ currentDate, events, tasks }: { currentDate: Date; events: Event[]; tasks: import('../../types').Task[] }) {
+function MonthView({ currentDate, events, tasks }: { currentDate: Date; events: NexoEvent[]; tasks: Task[] }) {
   const monthStart = startOfMonth(currentDate);
   const calStart = startOfWeek(monthStart, { locale: es });
   const calEnd = endOfWeek(endOfMonth(currentDate), { locale: es });
@@ -163,7 +161,7 @@ function MonthView({ currentDate, events, tasks }: { currentDate: Date; events: 
   );
 }
 
-function AgendaView({ events, tasks }: { events: Event[]; tasks: import('../../types').Task[] }) {
+function AgendaView({ events, tasks }: { events: NexoEvent[]; tasks: Task[] }) {
   const allItems = [
     ...(events as any[]).map((e: any) => ({ type: 'event' as const, date: e.start_datetime, title: e.title, scope: e.scope, item: e })),
     ...tasks.filter((t) => t.due_date).map((t) => ({ type: 'task' as const, date: t.due_date!, title: t.title, scope: t.scope, item: t })),
