@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,7 +12,6 @@ const taskSchema = z.object({
   urgency: z.number().min(1).max(3).optional(),
   due_date: z.string().optional(),
   due_time: z.string().optional(),
-  tag_ids: z.array(z.number()).optional(),
 });
 
 type TaskFormData = z.infer<typeof taskSchema>;
@@ -21,11 +21,13 @@ interface TaskFormProps {
   tags: Tag[];
   onSubmit: (data: TaskCreatePayload) => void;
   onCancel: () => void;
-  initialData?: Partial<TaskFormData>;
+  initialData?: Partial<TaskFormData> & { tag_ids?: number[] };
   isLoading?: boolean;
 }
 
 export function TaskForm({ scopes, tags, onSubmit, onCancel, initialData, isLoading }: TaskFormProps) {
+  const [selectedTags, setSelectedTags] = useState<number[]>(initialData?.tag_ids ?? []);
+
   const {
     register,
     handleSubmit,
@@ -40,12 +42,18 @@ export function TaskForm({ scopes, tags, onSubmit, onCancel, initialData, isLoad
     },
   });
 
+  const toggleTag = (tagId: number) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
+    );
+  };
+
   const handleFormSubmit = (data: TaskFormData) => {
     const payload: TaskCreatePayload = {
       ...data,
       due_date: data.due_date || undefined,
       due_time: data.due_time || undefined,
-      tag_ids: data.tag_ids ?? [],
+      tag_ids: selectedTags,
     };
     onSubmit(payload);
   };
@@ -162,18 +170,18 @@ export function TaskForm({ scopes, tags, onSubmit, onCancel, initialData, isLoad
         </label>
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
-            <label
+            <button
               key={tag.id}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-600 text-xs cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 min-h-[36px]"
+              type="button"
+              onClick={() => toggleTag(tag.id)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs cursor-pointer min-h-[36px] transition-colors ${
+                selectedTags.includes(tag.id)
+                  ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 border border-primary-400'
+                  : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
             >
-              <input
-                type="checkbox"
-                value={tag.id}
-                {...register('tag_ids', { setValueAs: (v: string[]) => v?.map(Number) })}
-                className="rounded"
-              />
               {tag.name}
-            </label>
+            </button>
           ))}
         </div>
       </div>
