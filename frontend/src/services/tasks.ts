@@ -62,14 +62,7 @@ async function addHistory(
 
 export const tasksService = {
   async list(params?: Record<string, string>): Promise<Task[]> {
-    let rows = await db.tasks
-      .where('deleted_at')
-      .equals('')
-      .or('deleted_at')
-      .equals(null as any)
-      .toArray();
-
-    // Filter deleted (Dexie null index workaround)
+    let rows = await db.tasks.toArray();
     rows = rows.filter((r) => !r.deleted_at);
 
     if (params?.scope_id) {
