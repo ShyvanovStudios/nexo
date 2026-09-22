@@ -35,12 +35,23 @@ export function TaskForm({ scopes, tags, onSubmit, onCancel, initialData, isLoad
     defaultValues: {
       importance: 2,
       urgency: 2,
+      scope_id: scopes[0]?.id,
       ...initialData,
     },
   });
 
+  const handleFormSubmit = (data: TaskFormData) => {
+    const payload: TaskCreatePayload = {
+      ...data,
+      due_date: data.due_date || undefined,
+      due_time: data.due_time || undefined,
+      tag_ids: data.tag_ids ?? [],
+    };
+    onSubmit(payload);
+  };
+
   return (
-    <form onSubmit={handleSubmit((data) => onSubmit(data as TaskCreatePayload))} className="space-y-4">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       {/* Title */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -66,7 +77,6 @@ export function TaskForm({ scopes, tags, onSubmit, onCancel, initialData, isLoad
           {...register('scope_id', { valueAsNumber: true })}
           className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-sm min-h-[44px] focus:ring-2 focus:ring-primary-500"
         >
-          <option value="">Seleccionar ámbito</option>
           {scopes.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}

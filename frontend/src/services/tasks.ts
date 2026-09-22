@@ -110,8 +110,10 @@ export const tasksService = {
     const ts = now();
     const importance = payload.importance ?? 2;
     const urgency = payload.urgency ?? 2;
+    const dueDate = payload.due_date || null;
+    const dueTime = payload.due_time || null;
     const base = calculateBasePriority(importance, urgency);
-    const effective = calculateEffectivePriority(importance, urgency, payload.due_date ?? null, payload.due_time ?? null);
+    const effective = calculateEffectivePriority(importance, urgency, dueDate, dueTime);
 
     const id = (await db.tasks.add({
       scope_id: payload.scope_id,
@@ -122,8 +124,8 @@ export const tasksService = {
       urgency,
       base_priority_score: base,
       effective_priority_score: effective,
-      due_date: payload.due_date ?? null,
-      due_time: payload.due_time ?? null,
+      due_date: dueDate,
+      due_time: dueTime,
       started_at: null,
       blocked_at: null,
       completed_at: null,
