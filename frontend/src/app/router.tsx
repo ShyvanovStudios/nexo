@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createHashRouter } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
 import { MyDayPage } from '../features/myday/MyDayPage';
@@ -12,9 +12,7 @@ import { StatsPage } from '../features/stats/StatsPage';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { MorePage } from '../features/more/MorePage';
 
-const basename = import.meta.env.BASE_URL;
-
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: '/',
     element: <AppShell />,
@@ -34,4 +32,4 @@ export const router = createBrowserRouter([
       { path: 'mas', element: <MorePage /> },
     ],
   },
-], { basename });
+]);
